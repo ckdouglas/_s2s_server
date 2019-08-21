@@ -45,7 +45,7 @@ app.get('/',(req,res)=>{
 
 app.post('/appApi',(req,res)=>{
     var body = req.body, credentials;
-    if(body.action == 'signup' || body.action== 'login' || body.action == 'social_auth')
+    if(body.action == 'signup' || body.action== 'login' || body.action == 'social_auth' || body.action == 'update_user')
         credentials = body.data;
     switch (body.action) {
         case 'signup':
@@ -119,10 +119,24 @@ app.post('/appApi',(req,res)=>{
             break;
           case 'get_wears':
               fetchWears((wears)=>{
-                console.log(wears);
                 res.status(201).json(wears)
               })
               break;
+           case 'update_user':
+            //    fetchUser(credentials.ID,(user)=>{
+            //        if (user){
+            //           if(credentials.dob) user.dob = credentials.dob;
+            //           if (credentials.phoneNumber) user.phoneNumber = credentials.phoneNumber;
+            //           if (credentials.returnAddress) user.return_address = credentials.returnAddress;
+            //           if (credentials.seller101) user.seller101 = user.seller101;
+            //         }
+            //    })
+
+            updateUser(credentials, function(){
+                console.log(credentials);
+                res.status(201).json({})
+            })
+               break;
     }
    
 })
@@ -147,12 +161,21 @@ app.post('/appApi',(req,res)=>{
     })
 })
 
- function  fetchUser(data,callback){
+function updateUser(user, callback){
+    Users.updateOne({_id:user.ID},{$set:user}, function(err, res){
+        if (err) throw err
+        console.log(res)
+        callback();
+    })
+}
+
+function  fetchUser(data,callback){
      Users.findOne({$or:[{username:data.username},{email:data.email} ]}, function(err, user){
         if(err)
              throw err;
         else
             callback(user)
+            console.log(user)
      })
  }
 
