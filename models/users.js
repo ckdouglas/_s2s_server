@@ -11,8 +11,13 @@ var userSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
     dob:String,
+<<<<<<< HEAD
     return_address:String,
     seller101:Boolean,
+=======
+    return_address:Array,
+    seller101:String,
+>>>>>>> d896576aa79df19f0259a849474d34e35cb96342
 });
 userSchema.methods.generatHarsh = function (password) {
 return bcrypt.hashSync(password, bcrypt.genSaltSync(9));
