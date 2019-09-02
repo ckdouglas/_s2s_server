@@ -1,5 +1,4 @@
-Users = require('./models/users');
-
+Users = require('../models/users');
 function updateUser(user, callback){
     Users.updateOne({_id:user.ID},{$set:user}, function(err, res){
         if (err) throw err
