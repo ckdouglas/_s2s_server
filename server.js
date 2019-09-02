@@ -8,7 +8,7 @@ mongoose = require('mongoose'),
 multer = require('multer'),
 app = express(),
 http = require('http').Server(app),
-Users = require('./models/users'),
+Users = require('./classes/users'),
 Shoes = require('./models/shoes'),
 Prices = require('./models/prices'),
 Wear = require('./models/wear');
@@ -50,35 +50,23 @@ app.post('/appApi',(req,res)=>{
         credentials = body.data;
     switch (body.action) {
         case 'signup':
-            fetchUser(credentials,(user)=>{
+            Users.fetchUser(credentials,(user)=>{
                 if(!user)
-                {   
-                    var newUser = new Users();
-                    newUser.username = credentials.username;
-                    newUser.email = credentials.email;
-                    newUser.photoUrl = credentials.photoUrl,
-                    newUser.phoneNunber = credentials.phoneNunber
-                    newUser.password =newUser.generatHarsh(credentials.password);
-                    newUser.save((err, user)=>{
-                        if(err)
-                         throw err;
-                         else
-                         console.log(user)
-                         res.status(201).json(user);
-                         //send mail to user using nodemailer
-                    })
-                }else{
-                    var errReturn;
-                     if(user.username == credentials.username)
-                      errReturn = {message:'Sorry the username has been taken', index:'0'};
-                     else if(user.email == credentials.email)
-                     errReturn = {message:'The email already exists', index:1};
-                     res.status(201).json(errReturn);
-                }
+                Users.createUser(credentials, function(user){
+                    res.status(201).json(user); 
+                })
+                else{
+                        var errReturn;
+                        if(user.username == credentials.username)
+                        errReturn = {message:'Sorry the username has been taken', index:'0'};
+                        else if(user.email == credentials.email)
+                        errReturn = {message:'The email already exists', index:1};
+                        res.status(201).json(errReturn);
+                    }
             })
             break;
         case 'login':
-            fetchUser(credentials,(user)=>{
+            Users.fetchUser(credentials,(user)=>{
                 if (!user || (credentials.email!= user.email)) {
                     res.status(201).json({message:'User does not exist,use correct credentials',index:'0'})
                 }else if(!user.validPassword(credentials.password)){
@@ -90,26 +78,16 @@ app.post('/appApi',(req,res)=>{
             })
             break;
         case 'social_auth':
-            fetchUser(credentials,(user)=>{
+            Users.fetchUser(credentials,(user)=>{
                 if (user) {
                     res.status(201).json(user)
                 }else{
                     if (credentials.email == null) {
                         res.status(201).json({message:'No Email address found',index:'0'})
-                    }else{
-                        var newUser = new Users();
-                        newUser.username = credentials.username;
-                        newUser.email = credentials.email;
-                        newUser.photoUrl = credentials.photoUrl,
-                        newUser.phoneNunber = credentials.phoneNunber
-                        newUser.password =newUser.generatHarsh(credentials.password);
-                        newUser.save((err, user)=>{
-                            if(err)
-                                throw err;
-                             else
-                                res.status(201).json(user); 
-                            })
-                    }
+                    }else
+                    Users.createUser(credentials, function(user){
+                            res.status(201).json(user); 
+                    })
                 }
             })
             break;
@@ -126,7 +104,7 @@ app.post('/appApi',(req,res)=>{
               })
               break;
           case 'update_user':
-            updateUser(credentials, function(){
+            Users.updateUser(credentials, function(){
                 console.log(credentials);
                 res.status(201).json({})
             })
@@ -156,23 +134,7 @@ app.post('/appApi',(req,res)=>{
     })
 })
 
-function updateUser(user, callback){
-    Users.updateOne({_id:user.ID},{$set:user}, function(err, res){
-        if (err) throw err
-        console.log(res)
-        callback();
-    })
-}
 
-function  fetchUser(data,callback){
-     Users.findOne({$or:[{username:data.username},{email:data.email} ]}, function(err, user){
-        if(err)
-             throw err;
-        else
-            callback(user)
-            console.log(user)
-     })
- }
  
  function fetchShoes(callback){
      Shoes.find({}, function(err, shoes){
@@ -192,23 +154,7 @@ function  fetchUser(data,callback){
      });
  }
 
- function  fetchUser(data,callback){
-    Users.findOne({$or:[{username:data.username},{email:data.email} ]}, function(err, user){
-       if(err)
-            throw err;
-       else
-           callback(user)
-           console.log(user)
-    })
-}
 
- function updateUser(user, callback){
-    Users.updateOne({_id:user.ID},{$set:user}, function(err, res){
-        if (err) throw err
-        console.log(res)
-        callback();
-    })
-}
 
 function postItem(item, callback){
 

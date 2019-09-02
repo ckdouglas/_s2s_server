@@ -23,7 +23,7 @@ function  fetchUser(data,callback){
     newUser.email = credentials.email;
     newUser.photoUrl = credentials.photoUrl,
     newUser.phoneNunber = credentials.phoneNunber
-    newUser.password =newUser.generatHarsh(credentials.password);
+    newUser.password = newUser.generatHarsh(credentials.password);
     newUser.save((err)=>{
         if(err)
             throw err;
