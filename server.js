@@ -7,11 +7,10 @@ nodemailer = require("nodemailer"),
 mongoose = require('mongoose'),
 multer = require('multer'),
 app = express(),
-http = require('http').Server(app);
-
-Users = require('./models/users');
-Shoes = require('./models/shoes');
-Prices = require('./models/prices');
+http = require('http').Server(app),
+Users = require('./models/users'),
+Shoes = require('./models/shoes'),
+Prices = require('./models/prices'),
 Wear = require('./models/wear');
 
 // mongoose.connect('mongodb://s2suser:s2spass@127.0.0.1/_s2s_',{ useNewUrlParser: true });
@@ -122,27 +121,11 @@ app.post('/appApi',(req,res)=>{
             break;
           case 'get_wears':
               fetchWears((wears)=>{
-<<<<<<< HEAD
                 // console.log(wears);
                 res.status(201).json(wears)
               })
               break;
           case 'update_user':
-=======
-                res.status(201).json(wears)
-              })
-              break;
-           case 'update_user':
-            //    fetchUser(credentials.ID,(user)=>{
-            //        if (user){
-            //           if(credentials.dob) user.dob = credentials.dob;
-            //           if (credentials.phoneNumber) user.phoneNumber = credentials.phoneNumber;
-            //           if (credentials.returnAddress) user.return_address = credentials.returnAddress;
-            //           if (credentials.seller101) user.seller101 = user.seller101;
-            //         }
-            //    })
-
->>>>>>> d896576aa79df19f0259a849474d34e35cb96342
             updateUser(credentials, function(){
                 console.log(credentials);
                 res.status(201).json({})
@@ -160,8 +143,7 @@ app.post('/appApi',(req,res)=>{
             var newWear = new Wear();
             newWear.shoesId = req.body.shoesId;
             // newWear.imageUrl  = 'http://'+req.headers.host+'/uploads/' + req.file.filename;
-             newWear.imageUrl  = 'http://192.168.1.106:3000/uploads/' + req.file.filename;
-
+            newWear.imageUrl  = 'http://192.168.1.106:3000/uploads/' + req.file.filename;
             newWear.save((err,wear)=>{
                 if (err) {
                     throw err
